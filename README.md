@@ -6,4 +6,4 @@
 
 需创建名为my_network的docker网络，子网为`172.19.0.0/16`。
 
-TODO: 各xml是直接从相应default.xml中修改的，发现一些过期配置会覆盖未过期配置导致bug（fs.defaultFS配置问题）。
+TODO: 各xml是直接从相应default.xml中修改的，发现一些废弃配置会覆盖未废弃的配置导致bug（fs.defaultFS会遇到该问题），还未修改。

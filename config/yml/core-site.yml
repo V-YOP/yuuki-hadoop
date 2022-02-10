@@ -1,0 +1,9 @@
+fs:
+  defaultFS: "hdfs://hadoop1:8020"
+
+hadoop:
+  tmp:
+    dir: /opt/hadoop/data
+  http:
+    staticuser:
+      user: root

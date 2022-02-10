@@ -1,0 +1,5 @@
+yarn:
+  nodemanager:
+    aux-services: mapreduce_shuffle
+  resourcemanager:
+    hostname: hadoop2
