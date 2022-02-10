@@ -1,0 +1,40 @@
+# 需创建名为my_network的网络，172.19.0.0/16
+version: '3.8'
+
+networks:
+  my_network:
+    external: true
+
+# hadoop1: NameNode, DataNode           |  NodeManager
+# hadoop2: DataNode                     |  ResourceManager, NodeManager
+# hadoop3: SecondaryNameNode, DataNode  |  NodeManager
+services:  
+  hadoop1:
+    stdin_open: true 
+    tty: true 
+    build: .
+    hostname: hadoop1
+    container_name: hadoop1
+    networks:
+      my_network:
+        ipv4_address: 172.19.2.1
+  hadoop2:
+    stdin_open: true 
+    tty: true 
+    build: .
+    hostname: hadoop2
+    container_name: hadoop2
+    networks:
+      my_network:
+        ipv4_address: 172.19.2.2
+  hadoop3:
+    stdin_open: true 
+    tty: true 
+    build: .
+    hostname: hadoop3
+    container_name: hadoop3
+    networks:
+      my_network:
+        ipv4_address: 172.19.2.3
+    environment:
+      like_a_comment: hhh
