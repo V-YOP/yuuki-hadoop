@@ -11,10 +11,10 @@ callIfHostname("hadoop1",() => {
 })
 
 callIfHostname("hadoop2",()=>{
-    
+    execCmd("echo 'hello, world!'")
 })
 
 callIfHostname("hadoop3",()=>{
-    
+    execCmd("echo 'hello, world!'")
 })
 
