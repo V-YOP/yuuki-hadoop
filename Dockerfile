@@ -4,7 +4,12 @@ FROM fedora
 RUN yum install -y openssh-server openssh-clients hostname util-linux procps vim
 
 # ./source/runtime_environment/hadoop/, ./source/runtime_environment/node/, ./source/runtime_environment/jdk8/
-COPY ./source/runtime_environment/ /opt/
+# ADD命令会解压压缩文件！
+# 解压各tar.gz并修改文件夹名称！如果更换了压缩包，名称一定也要更换
+ADD ./source/runtime_environment/* /opt/
+RUN mv /opt/hadoop-3.3.1/           /opt/hadoop/  &&\
+    mv /opt/node-v17.5.0-linux-x64/ /opt/node/    &&\
+    mv /opt/jdk8u322-b06/           /opt/jdk8/
 
 ENV PATH="/opt/hadoop/bin:/opt/hadoop/sbin:/opt/node/bin:/opt/jdk8/bin:${PATH}" \
     JAVA_HOME="/opt/jdk8" \
@@ -40,8 +45,7 @@ WORKDIR /init-script
 RUN npm i
 
 
-CMD node /init-script/src/init.js &&\
-    node /init-script/src/on-start.js
+CMD node /init-script/src/init.js && node /init-script/src/on-start.js
     
 
 # 使用 docker-compose up -d --build 来build和启动

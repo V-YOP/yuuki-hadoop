@@ -76,20 +76,16 @@ function buildHadoopXml(obj) {
  * @param {object} obj
  */
 function flattenObjectRec(obj) {
-    const res = {}
     function helper(obj, path = '') {
-        if (!obj)
-            return
-        Object.entries(obj).forEach(([key, value]) => {
-            const nextKey = path === '' ? key : path + '.' + key
-            if (value instanceof Object) 
-                helper(obj[key], nextKey)
-            else 
-                res[nextKey] = value    
+        if (!obj || !(obj instanceof Object)) {
+            throw new Error("you bad bad!")
+        }
+        return Object.entries(obj).flatMap(([k, v]) => {
+            const nextKey = path === '' ? k : `${path}.${k}`
+            return v instanceof Object ? helper(v, nextKey) : [[nextKey, v]]
         })
     }
-    helper(obj)
-    return res
+    return Object.fromEntries(helper(obj))
 }
 
 
