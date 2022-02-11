@@ -58,7 +58,8 @@ function buildHadoopXml(obj) {
     }
     const entries = Object.entries(obj)
     // XML第一个标签前面不能够有任何空行！
-    return `<?xml version="1.0"?><?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+    const res = `<?xml version="1.0"?>
+    <?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
     <configuration>
     ${
         entries.map(([k, v]) => `
@@ -70,12 +71,24 @@ function buildHadoopXml(obj) {
     }
     </configuration>
     `
+    // 保证正确缩进
+    return res.split("\n")
+        .flatMap(line => !!line && line.trim().length !== 0 ? [line.trim()] : [])
+        .map(line => {
+            const startsWith = (...strs) => strs.some(str => line.startsWith(str))
+            if (startsWith('<?', '<configuration>', '</configuration>'))
+                return line
+            if (startsWith('<property>', '</property>'))
+                return `    ${line}`
+            if (startsWith('<name>', '</name>', '<value>', '</value>'))
+                return `        ${line}`
+        }).join("\n")
 }
 
 /**
  * 将多层的对象转换成完全扁平的KV对
  * @example {a:{b:{c:1,d:2}}} => {"a.b.c": 1, "b.c.d" : 2}
- * @param {object} obj
+ * @param {Record<string, string>} obj
  */
 function flattenObjectRec(obj) {
     function helper(obj, path = '') {
@@ -93,7 +106,7 @@ function flattenObjectRec(obj) {
 /**
  * 根据文件路径读取properties文件，作为扁平的KV对返回
  * @param {string} filePath 
- * @return {object}
+ * @return {Record<string, string>}
  */
 function readPropertiesSync(filePath) {
     const properties = PropertiesReader(filePath)

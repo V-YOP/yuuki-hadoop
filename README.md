@@ -17,4 +17,5 @@
 # TODO
 
 - [x] 使用properties来进行配置而非yml
+- [ ] 创建新的用户来使用hdfs，而不使用root
 - [ ] 把所有脚本换成ts
