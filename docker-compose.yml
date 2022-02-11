@@ -8,6 +8,9 @@ networks:
 # hadoop1: NameNode, DataNode           |  NodeManager
 # hadoop2: DataNode                     |  ResourceManager, NodeManager
 # hadoop3: SecondaryNameNode, DataNode  |  NodeManager
+# hadoop4: DataNode                     |  NodeManager
+# 可以注意到，每个机器上都有DataNode和NodeManager，而NameNode，ResourceManager，SecondaryNameNode只有一个
+# 问题：NameNode和ResourceManager是如何标识的？配置文件？执行hdfs namenode -format的机器？启动start-dfs.sh，start-yarn.sh的机器？
 services:  
   hadoop1:
     stdin_open: true 
@@ -15,6 +18,8 @@ services:
     build: .
     hostname: hadoop1
     container_name: hadoop1
+    volumes:
+      - ./share/:/share
     networks:
       my_network:
         ipv4_address: 172.19.2.1
@@ -24,6 +29,8 @@ services:
     build: .
     hostname: hadoop2
     container_name: hadoop2
+    volumes:
+      - ./share/:/share
     networks:
       my_network:
         ipv4_address: 172.19.2.2
@@ -33,8 +40,21 @@ services:
     build: .
     hostname: hadoop3
     container_name: hadoop3
+    volumes:
+      - ./share/:/share
     networks:
       my_network:
         ipv4_address: 172.19.2.3
+  hadoop4:
+    stdin_open: true 
+    tty: true 
+    build: .
+    hostname: hadoop4
+    container_name: hadoop4
+    volumes:
+      - ./share/:/share
+    networks:
+      my_network:
+        ipv4_address: 172.19.2.4
     environment:
       like_a_comment: hhh

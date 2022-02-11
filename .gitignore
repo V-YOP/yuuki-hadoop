@@ -1,2 +1,4 @@
 # 排除掉hadoop，node，jdk环境，不然太大了
-source/runtime_environment/
+source/runtime_environment/*.tar.gz
+.DS_Store
+**/node_modules/

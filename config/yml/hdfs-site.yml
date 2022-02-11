@@ -1,5 +1,0 @@
-dfs:
-  namenode:
-    http-address: "hadoop1:9870"
-    secondary:
-      http-address: "hadoop3:9868"

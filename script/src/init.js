@@ -1,4 +1,4 @@
-const { bindCmd, execCmd, callIfHostname, firstTime, buildHadoopXml, flattenObjectRec } = require("./yuuki-util")
+const { bindCmd, execCmd, callIfHostname, firstTime, buildHadoopXml, readPropertiesSync } = require("./yuuki-util")
 const yaml = require("js-yaml")
 const fs = require("fs")
 const path = require('path')
@@ -7,15 +7,15 @@ if (!firstTime()) {
     return;    
 }
 
-// 根据所有yaml生成相应xml
+// 根据所有properties生成相应xml
 [
-    "core-site.yml",
-    "hdfs-site.yml",
-    "mapred-site.yml",
-    "yarn-site.yml",
+    "core-site.properties",
+    "hdfs-site.properties",
+    "mapred-site.properties",
+    "yarn-site.properties",
 ].map(name => `${process.env["HADOOP_HOME"]}/etc/hadoop/${name}`)
     .filter(file => fs.existsSync(file))
-    .map(file => [path.resolve(path.dirname(file), path.basename(file, '.yml') + ".xml"), buildHadoopXml(flattenObjectRec(yaml.load(fs.readFileSync(file, 'utf8'))))])
+    .map(file => [path.resolve(path.dirname(file), path.basename(file, '.properties') + ".xml"), buildHadoopXml(readPropertiesSync(file))])
     .forEach(([xmlPath, content]) => {
         fs.writeFileSync(xmlPath, content)
     })
@@ -33,3 +33,6 @@ callIfHostname("hadoop3",() => {
     execCmd("echo 'hello, world!'")
 })
 
+callIfHostname("hadoop4",() => {
+    execCmd("echo 'hello, world!'")
+})

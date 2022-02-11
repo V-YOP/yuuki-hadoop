@@ -3,6 +3,8 @@
  */
 const fs = require("fs")
 const { execSync, spawnSync } = require("child_process")
+const PropertiesReader = require('properties-reader')
+
 const callOption = {
     cwd: process.cwd(), 
     env: process.env, 
@@ -88,6 +90,19 @@ function flattenObjectRec(obj) {
     return Object.fromEntries(helper(obj))
 }
 
+/**
+ * 根据文件路径读取properties文件，作为扁平的KV对返回
+ * @param {string} filePath 
+ * @return {object}
+ */
+function readPropertiesSync(filePath) {
+    const properties = PropertiesReader(filePath)
+    const res = {}
+    properties.each((k, v) => {
+        res[k] = v.toString()
+    })
+    return res
+}
 
 module.exports = exports = {
     bindCmd,
@@ -95,5 +110,6 @@ module.exports = exports = {
     callIfHostname,
     firstTime,
     buildHadoopXml,
-    flattenObjectRec
+    flattenObjectRec,
+    readPropertiesSync
 }

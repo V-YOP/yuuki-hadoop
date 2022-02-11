@@ -1,11 +1,13 @@
 FROM fedora
 
-# ssh，以及一些方便debug的玩意
-RUN yum install -y openssh-server openssh-clients hostname util-linux procps vim
+# ssh，以及一些方便debug的玩意...
+RUN yum install -y openssh-server openssh-clients hostname util-linux procps vim findutils
+# 这hadoop依赖好多终端命令……就连调个example都能报出来个什么command not found，宁开玩笑吗？
+
 
 # ./source/runtime_environment/hadoop/, ./source/runtime_environment/node/, ./source/runtime_environment/jdk8/
 # ADD命令会解压压缩文件！
-# 解压各tar.gz并修改文件夹名称！如果更换了压缩包，名称一定也要更换
+# 解压各tar.gz并修改文件夹名称！如果更换了版本，记得修改文件夹名称
 ADD ./source/runtime_environment/* /opt/
 RUN mv /opt/hadoop-3.3.1/           /opt/hadoop/  &&\
     mv /opt/node-v17.5.0-linux-x64/ /opt/node/    &&\
@@ -14,6 +16,7 @@ RUN mv /opt/hadoop-3.3.1/           /opt/hadoop/  &&\
 ENV PATH="/opt/hadoop/bin:/opt/hadoop/sbin:/opt/node/bin:/opt/jdk8/bin:${PATH}" \
     JAVA_HOME="/opt/jdk8" \
     HADOOP_HOME="/opt/hadoop" \
+    HADOOP_MAPRED_HOME="/opt/hadoop" \
     HDFS_NAMENODE_USER="root" \
     HDFS_DATANODE_USER="root" \
     HDFS_SECONDARYNAMENODE_USER="root" \
@@ -34,7 +37,7 @@ RUN echo -e 'export JAVA_HOME=/opt/jdk8' >> /etc/profile.d/custom.sh  &&\
     chmod 600 /root/.ssh/id_rsa /root/.ssh/authorized_keys
 
 # hadoop的xml，workers
-COPY ./config/yml/* /opt/hadoop/etc/hadoop/
+COPY ./config/properties/* /opt/hadoop/etc/hadoop/
 COPY ./config/workers /opt/hadoop/etc/hadoop/
 
 # 拷贝nodejs脚本
@@ -44,8 +47,6 @@ COPY ./script/ /init-script/
 WORKDIR /init-script
 RUN npm i
 
-
 CMD node /init-script/src/init.js && node /init-script/src/on-start.js
-    
 
 # 使用 docker-compose up -d --build 来build和启动

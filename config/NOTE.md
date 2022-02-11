@@ -1,3 +1,3 @@
-hadoop和ssh的配置文件
+hadoop和ssh的配置文件。
 
-当前使用yml进行配置，方便，舒心，就是没有补全～
+当前使用properties进行配置，它扁平的结构反而比yml更符合需要。
