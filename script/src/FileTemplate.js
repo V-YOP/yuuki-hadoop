@@ -1,9 +1,9 @@
+/**
+ * 大概是一个超简单的模板引擎，使用{{variable}}的形式来进行文本替换
+ */
 const fs = require('fs')
 const path = require("path")
-const currentPath = __dirname
-
 /**
- * 
  * @param {string} filePath 
  * @param {string} fileName 模版名或生成文件名，该路径必须存在fileName.template文件
  * @param {Map<string, string>} context 
@@ -37,7 +37,6 @@ function buildTemplate(filePath, fileName, context) {
         }
         return str
     }
-
     fs.writeFileSync(resultFilePath, replaceTemplate(readFile(templatePath), context))
 }
 

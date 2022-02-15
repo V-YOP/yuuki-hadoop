@@ -1,5 +1,5 @@
+#!/bin/sh
 # 执行wordcount
-
 hadoop fs -rm -r -f /input 
 hadoop fs -rm -r -f /output
 hadoop fs -mkdir /input

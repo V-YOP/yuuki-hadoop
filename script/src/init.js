@@ -1,7 +1,8 @@
-const { bindCmd, execCmd, callIfHostname, firstTime, buildHadoopXml, readPropertiesSync } = require("./yuuki-util")
-const yaml = require("js-yaml")
+const { bindCmd, execCmd, callIfHostname, firstTime, buildHadoopXml, readPropertiesSync, hadoopConfigPath } = require("./yuuki-util")
+
 const fs = require("fs")
 const path = require('path')
+
 // 保证只执行一次
 if (!firstTime()) {
     return;
@@ -16,14 +17,12 @@ const configFileList =
      "mapred-site.properties",
      "yarn-site.properties"]
 
-configFileList.map(name => `${process.env["HADOOP_HOME"]}/etc/hadoop/${name}`)
+configFileList.map(filename => path.resolve(hadoopConfigPath(), filename))
     .filter(file => fs.existsSync(file))
-    .map(file => [path.resolve(path.dirname(file), path.basename(file, '.properties') + ".xml"),
-    readPropertiesSync(file)])
+    .map(file => [`${path.dirname(file)}/${path.basename(file, '.properties')}.xml`, readPropertiesSync(file)])
     .forEach(([xmlPath, content]) => {
-        console.log(`构造hadoop配置文件：${xmlPath}`)
         const result = buildHadoopXml(content)
-        console.log(result)
+        console.log(`构造hadoop配置文件：${xmlPath}\n${result}`)
         fs.writeFileSync(xmlPath, result)
     })
 

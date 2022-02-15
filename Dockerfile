@@ -4,7 +4,6 @@ FROM fedora
 RUN yum install -y openssh-server openssh-clients hostname util-linux procps vim findutils
 # 这hadoop依赖好多终端命令……就连调个example都能报出来个什么command not found，宁开玩笑吗？
 
-
 # ./source/runtime_environment/hadoop/, ./source/runtime_environment/node/, ./source/runtime_environment/jdk8/
 # ADD命令会解压压缩文件！
 # 解压各tar.gz并修改文件夹名称！如果更换了版本，记得修改文件夹名称
@@ -45,7 +44,10 @@ COPY ./script/ /init-script/
 
 # 安装一些nodejs的依赖
 WORKDIR /init-script
-RUN npm i
+RUN npm i && npm i -g http-server
+
+# 为什么init.js文件写在CMD而非通过RUN执行？因为它的执行需要获取容器的运行时的配置
+WORKDIR /share
 
 CMD node /init-script/src/init.js && node /init-script/src/on-start.js
 

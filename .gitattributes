@@ -1,0 +1,2 @@
+# 强制使用lf，使不会在ssh和hadoop workers上发生问题
+* eol=lf

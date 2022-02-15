@@ -5,6 +5,6 @@ const lst = [1, 2, 3, 4]
 
 lst.forEach(i => {
     console.log(`hadoop${i}: `)
-    bindCmd(`docker exec hadoop${i} jps`)
+    bindCmd(`docker exec hadoop${i} jps`)   
     console.log("--------")
 })

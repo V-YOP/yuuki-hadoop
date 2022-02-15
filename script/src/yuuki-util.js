@@ -2,30 +2,40 @@
  * 搞不懂child_process的exec和spawn的区别，我来另搞一个
  */
 const fs = require("fs")
-const { execSync, spawnSync } = require("child_process")
-const PropertiesReader = require('properties-reader')
+const { execSync, spawnSync , exec } = require("child_process")
 
-const callOption = {
-    cwd: process.cwd(), 
-    env: process.env, 
-    shell: true,
-    stdio: 'inherit',
-    encoding: 'utf-8' 
-}
+/**
+ * 用于阅读properties文件
+ */
+const PropertiesReader = require('properties-reader')
 
 /**
  * “绑定”到某命令，同终端下运行命令无异（应该
  * @param {*} path 命令路径
  * @returns 
  */
-const bindCmd = path => spawnSync(path, null, callOption)
+const bindCmd = path => spawnSync(path, null, {
+    cwd: process.cwd(), 
+    env: process.env, 
+    shell: true,
+    stdio: 'inherit',
+    encoding: 'utf-8' 
+})
 
 /**
- * 执行某命令，类似使用&但是是同步？俺也不知道啊
+ * 同步执行控制台命令，不关心输出
  */
 const execCmd = execSync
 
+/**
+ * 异步执行控制台命令，不关心输出
+ */
+const execCmdAsync = exec
 
+/**
+ * 检查是否是第一次执行，其将创建文件/root/inited来作为标识
+ * @returns 
+ */
 function firstTime() {
     // 如果不是第一次执行，则直接退出执行
     if (fs.existsSync("/root/inited")){
@@ -60,6 +70,7 @@ function buildHadoopXml(obj) {
     // XML第一个标签前面不能够有任何空行！
     const res = `<?xml version="1.0"?>
     <?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+    <!-- 该文件为代码自动生成w -->
     <configuration>
     ${
         entries.map(([k, v]) => `
@@ -79,9 +90,9 @@ function buildHadoopXml(obj) {
             if (startsWith('<?', '<configuration>', '</configuration>'))
                 return line
             if (startsWith('<property>', '</property>'))
-                return `    ${line}`
+                return `  ${line}`
             if (startsWith('<name>', '</name>', '<value>', '</value>'))
-                return `        ${line}`
+                return `    ${line}`
         }).join("\n")
 }
 
@@ -117,6 +128,18 @@ function readPropertiesSync(filePath) {
     return res
 }
 
+
+/**
+ * 根据环境变量HADOOP_HOME获取返回HADOOP的配置目录
+ * @example "/opt/hadoop/etc/hadoop"
+ * @returns {string} HADOOP的配置目录，末尾没有/
+ */
+function hadoopConfigPath() {
+    if (!process.env["HADOOP_HOME"])
+        throw new Error("未找到HADOOP_HOME环境变量！")
+    return `${process.env["HADOOP_HOME"]}/etc/hadoop`;
+}
+
 module.exports = exports = {
     bindCmd,
     execCmd,
@@ -124,5 +147,7 @@ module.exports = exports = {
     firstTime,
     buildHadoopXml,
     flattenObjectRec,
-    readPropertiesSync
+    readPropertiesSync,
+    hadoopConfigPath,
+    execCmdAsync
 }
