@@ -58,14 +58,15 @@ function callIfHostname(hostname, fn) {
 }
 
 /**
- * 根据kv对生成Hadoop需要的XML格式字符串
- * @param {object} obj 
+ * 根据kv对生成Hadoop需要的XML格式字符串，忽略所有以metadata开头的字段
+ * @param {Record<string, object>} obj 
  * @returns {string}
  */
 function buildHadoopXml(obj) {
     if (!obj) {
         throw new Error("map不能为空！")
     }
+    // 忽略所有以metadata开头的字段
     const entries = Object.entries(obj)
     // XML第一个标签前面不能够有任何空行！
     const res = `<?xml version="1.0"?>
@@ -93,6 +94,7 @@ function buildHadoopXml(obj) {
                 return `  ${line}`
             if (startsWith('<name>', '</name>', '<value>', '</value>'))
                 return `    ${line}`
+            return line
         }).join("\n")
 }
 
@@ -115,17 +117,23 @@ function flattenObjectRec(obj) {
 }
 
 /**
- * 根据文件路径读取properties文件，作为扁平的KV对返回
+ * 根据文件路径读取properties文件，作为扁平的KV对序列返回，返回值的第一个元素为数据，第二个元素为元数据
+ * key使用metadata开头的KV对认为是元数据
  * @param {string} filePath 
- * @return {Record<string, string>}
+ * @return {[Record<string, string>, Record<string, string>]}
  */
 function readPropertiesSync(filePath) {
     const properties = PropertiesReader(filePath)
-    const res = {}
+    const data = {}
+    const metadata = {}
     properties.each((k, v) => {
-        res[k] = v.toString()
+        // 使用metadata开头的
+        if (k.startsWith('metadata'))
+            metadata[k] = v.toString()
+        else
+            data[k] = v.toString()
     })
-    return res
+    return [data, metadata]
 }
 
 
@@ -140,6 +148,24 @@ function hadoopConfigPath() {
     return `${process.env["HADOOP_HOME"]}/etc/hadoop`;
 }
 
+/**
+ * 简单的“模板引擎”，把字符串中{{VARIABLE_NAME}}做替换
+ * @param {string} str 
+ * @param {Map<string,string>} context 
+ * @return {string}
+ */
+ function parseTemplate(str, context) {
+    Object.entries(context).forEach(([name, value]) => {
+        str = str.replace(new RegExp(`{{${name}+?}}`, "g"), value)
+    })
+
+    const check = /{{(.*)}}/.exec(str)
+    if (check && check.length > 0) {
+        throw new Error(`存在上下文中未声明的变量：` + check.filter(str => !str.startsWith("{{")).join(", "))
+    }
+    return str
+ }
+
 module.exports = exports = {
     bindCmd,
     execCmd,
@@ -149,5 +175,6 @@ module.exports = exports = {
     flattenObjectRec,
     readPropertiesSync,
     hadoopConfigPath,
-    execCmdAsync
+    execCmdAsync,
+    parseTemplate
 }

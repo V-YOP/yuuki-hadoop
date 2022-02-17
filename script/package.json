@@ -8,6 +8,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "http-server": "^14.1.0",
     "js-yaml": "^4.1.0",
     "properties-reader": "^2.2.0"
   }

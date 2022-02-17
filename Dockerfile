@@ -22,6 +22,13 @@ ENV PATH="/opt/hadoop/bin:/opt/hadoop/sbin:/opt/node/bin:/opt/jdk8/bin:${PATH}" 
     YARN_RESOURCEMANAGER_USER="root" \
     YARN_NODEMANAGER_USER="root" 
 
+# 拷贝package.json，用来安装依赖
+COPY ./script/package.json /init-script/
+
+# 安装一些nodejs的依赖，包括http-server
+WORKDIR /init-script
+RUN npm i
+
 # SSH配置
 COPY ./config/ssh/* /root/.ssh/
 COPY ./config/ssh/sshd_config /etc/ssh/
@@ -35,20 +42,17 @@ RUN echo -e 'export JAVA_HOME=/opt/jdk8' >> /etc/profile.d/custom.sh  &&\
     chmod 644 /root/.ssh/id_rsa.pub &&\
     chmod 600 /root/.ssh/id_rsa /root/.ssh/authorized_keys
 
+
 # hadoop的xml，workers
-COPY ./config/properties/* /opt/hadoop/etc/hadoop/
+COPY ./config/properties/* /config/properties/
 COPY ./config/workers /opt/hadoop/etc/hadoop/
 
-# 拷贝nodejs脚本
-COPY ./script/ /init-script/
-
-# 安装一些nodejs的依赖
-WORKDIR /init-script
-RUN npm i && npm i -g http-server
+# node脚本
+COPY ./script/src/ /init-script/src/
 
 # 为什么init.js文件写在CMD而非通过RUN执行？因为它的执行需要获取容器的运行时的配置
 WORKDIR /share
 
-CMD node /init-script/src/init.js && node /init-script/src/on-start.js
+CMD node /init-script/src/index.js
 
 # 使用 docker-compose up -d --build 来build和启动

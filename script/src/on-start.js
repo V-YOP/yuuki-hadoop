@@ -8,7 +8,7 @@ execCmd("/usr/sbin/sshd -E /etc/ssh/sshd.log")
 // 在hadoop文档位置启动一个http-server
 // http-server似乎没有提供作为daemon执行的选项，这里异步执行
 console.log("===启动展示文档的http服务===")
-execCmdAsync(`http-server -s -p 80 ${resolve(process.env["HADOOP_HOME"], "share/doc/hadoop/")}`)
+execCmdAsync(`/init-script/node_modules/http-server/bin/http-server -s -p 80 ${resolve(process.env["HADOOP_HOME"], "share/doc/hadoop/")}`)
 
 callIfHostname("hadoop1", () => {
     // hdfs在namenode所在节点上启动
