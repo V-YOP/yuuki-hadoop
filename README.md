@@ -13,11 +13,12 @@
 
 # usage
 
-**需在source/runtime_environment中添加hadoop（3），jdk8，node的二进制的tar.gz包**，细节见Dockerfile，这里给出清华大学镜像源的这些包的下载点。
+**需在source/runtime_environment中添加hadoop（3），jdk8，node, zookeeper的二进制的tar.gz包**，细节见Dockerfile，这里给出清华大学镜像源的这些包的下载点。
 
 - [Hadoop-3.3.1](https://mirrors.tuna.tsinghua.edu.cn/apache/hadoop/common/hadoop-3.3.1/hadoop-3.3.1.tar.gz)
 - [jdk8](https://mirrors.tuna.tsinghua.edu.cn/AdoptOpenJDK/8/jdk/x64/linux/OpenJDK8U-jdk_x64_linux_hotspot_8u322b06.tar.gz)
 - [node](https://mirrors.tuna.tsinghua.edu.cn/nodejs-release/v17.5.0/node-v17.5.0-linux-x64.tar.gz)
+- [zookeeper](https://mirrors.tuna.tsinghua.edu.cn/apache/zookeeper/zookeeper-3.5.9/apache-zookeeper-3.5.9-bin.tar.gz)
 
 然后执行`docker-compose up -d --build`即可，详细说明……之后会补上吧大概。
 
