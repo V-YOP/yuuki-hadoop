@@ -14,51 +14,57 @@ networks:
 # 当然，它也可以不只有一个，使用高可用配置能让Namenode具有热备份，从而消除单点故障的存在（好耶！）
 # 问题：NameNode和ResourceManager是如何标识的？配置文件？执行hdfs namenode -format的机器？启动start-dfs.sh，start-yarn.sh的机器？
 services:  
-  hadoop1:
+  hdp1.local:
     stdin_open: true 
     tty: true 
     build: .
-    hostname: hadoop1
-    container_name: hadoop1
+    hostname:  hdp1.local
+    container_name:  hdp1.local
     volumes:
       - ./share/:/share
     networks:
       my_network:
         ipv4_address: 172.19.2.1
-  hadoop2:
+  hdp2.local:
     stdin_open: true 
     tty: true 
     build: .
-    hostname: hadoop2
-    container_name: hadoop2
+    hostname: hdp2.local
+    container_name: hdp2.local
     volumes:
       - ./share/:/share
     networks:
       my_network:
         ipv4_address: 172.19.2.2
-  hadoop3:
+  hdp3.local:
     stdin_open: true 
     tty: true 
     build: .
-    hostname: hadoop3
-    container_name: hadoop3
+    hostname: hdp3.local
+    container_name: hdp3.local
     volumes:
       - ./share/:/share
     networks:
       my_network:
         ipv4_address: 172.19.2.3
-
-  # 多加一台的话会占用更多内存，干脆只用3台
-  # hadoop4:
-  #   stdin_open: true 
-  #   tty: true 
-  #   build: .
-  #   hostname: hadoop4
-  #   container_name: hadoop4
-  #   volumes:
-  #     - ./share/:/share
-  #   networks:
-  #     my_network:
-  #       ipv4_address: 172.19.2.4
-  #   environment:
-  #     like_a_comment: hhh
+  hive.local:
+    stdin_open: true 
+    tty: true 
+    build: .
+    hostname: hive.local
+    container_name: hive.local
+    volumes:
+      - ./share/:/share
+    networks:
+      my_network:
+        ipv4_address: 172.19.2.4
+  mysql:
+    image: mysql
+    hostname: db.local
+    container_name : db.local
+    networks:
+      my_network:
+        ipv4_address: 172.19.2.5
+    environment:
+      MYSQL_ROOT_PASSWORD : 123456
+     

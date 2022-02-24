@@ -11,10 +11,10 @@ const PropertiesReader = require('properties-reader')
 
 /**
  * “绑定”到某命令，同终端下运行命令无异（应该
- * @param {*} path 命令路径
+ * @param {*} cmd 命令
  * @returns 
  */
-const bindCmd = path => spawnSync(path, null, {
+const bindCmd = cmd => spawnSync(cmd, null, {
     cwd: process.cwd(), 
     env: process.env, 
     shell: true,
@@ -25,7 +25,7 @@ const bindCmd = path => spawnSync(path, null, {
 /**
  * 同步执行控制台命令，不关心输出
  */
-const execCmd = execSync
+const execCmd = cmd => execSync(cmd)
 
 /**
  * 异步执行控制台命令，不关心输出
@@ -38,24 +38,13 @@ const execCmdAsync = exec
  */
 function firstTime() {
     // 如果不是第一次执行，则直接退出执行
-    if (fs.existsSync("/root/inited")){
+    if (fs.existsSync("/home/yuuki/inited")){
         return false
     }
-    fs.writeFileSync("/root/inited", "")
+    fs.writeFileSync("/home/yuuki/inited", "")
     return true
 }
 
-/**
- * 如果hostname匹配，则同步执行回调
- * @param {string} hostname 
- * @param {()=>()} fn 
- */
-function callIfHostname(hostname, fn) {
-    if (!process.env["HOSTNAME"])
-        throw new Error("HOSTNAME环境变量未初始化！请不要在Dockerfile中通过RUN来执行该nodejs脚本！")
-    if (hostname === process.env["HOSTNAME"])
-        fn()
-}
 
 /**
  * 根据kv对生成Hadoop需要的XML格式字符串，忽略所有以metadata开头的字段
@@ -166,15 +155,24 @@ function hadoopConfigPath() {
     return str
  }
 
+ /**
+  * 在指定的毫秒后resolve，同await联合使用
+  * @param {number} time 
+  * @returns 
+  */
+function sleep(time) {
+    return new Promise(resolve=>setTimeout(resolve, time))    
+}
+
 module.exports = exports = {
     bindCmd,
     execCmd,
-    callIfHostname,
     firstTime,
     buildHadoopXml,
     flattenObjectRec,
     readPropertiesSync,
     hadoopConfigPath,
     execCmdAsync,
-    parseTemplate
+    parseTemplate,
+    sleep
 }
