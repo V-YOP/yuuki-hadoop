@@ -1,5 +1,5 @@
 /**
- * 搞不懂child_process的exec和spawn的区别，我来另搞一个
+ * 自己使用的工具类，基本不考虑错误处理
  */
 const fs = require("fs")
 const { execSync, spawnSync , exec } = require("child_process")
@@ -164,6 +164,27 @@ function sleep(time) {
     return new Promise(resolve=>setTimeout(resolve, time))    
 }
 
+/**
+ * 检查host对应端口是否联通
+ * @param {string} host 形式为 host:port，如 localhost:80
+ */
+function portValid(host) {
+    const [host_, port] = host.split(":")
+    return bindCmd(`nc -z ${host_} ${port}`).status === 0
+}
+
+/**
+ * 自旋等待直到满足，和await结合使用
+ * @param { () => bool } predicate 
+ * @param {number} duration 等待时间，单位为毫秒，默认为100毫秒
+ * @returns 
+ */
+async function waitUntil(predicate, duration = 100) {
+    if (predicate()) return
+    await sleep(duration)
+    await waitUntil(predicate, duration)
+}
+
 module.exports = exports = {
     bindCmd,
     execCmd,
@@ -174,5 +195,7 @@ module.exports = exports = {
     hadoopConfigPath,
     execCmdAsync,
     parseTemplate,
-    sleep
+    sleep,
+    portValid,
+    waitUntil
 }

@@ -36,9 +36,8 @@ RUN npm i
 
 # SSH配置
 RUN adduser yuuki &&\
-    echo -e '\nyuuki ALL=(root)NOPASSWD:ALL' >> /etc/sudoers &&\
-    usermod -G wheel yuuki
-COPY ./config/su /etc/pam.d/su
+    echo -e '\nyuuki ALL=(root)NOPASSWD:ALL' >> /etc/sudoers
+
 COPY ./config/ssh/* /home/yuuki/.ssh/
 COPY ./config/ssh/sshd_config /etc/ssh/
 

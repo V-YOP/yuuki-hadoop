@@ -1,4 +1,4 @@
-const { bindCmd, execCmd, firstTime, buildHadoopXml, readPropertiesSync, hadoopConfigPath, parseTemplate, sleep } = require("./yuuki-util")
+const { bindCmd, execCmd, firstTime, buildHadoopXml, readPropertiesSync, hadoopConfigPath, parseTemplate, sleep, waitUntil, portValid } = require("./yuuki-util")
 
 const { callIfHostname } = require("./asyncCall")
 
@@ -45,22 +45,19 @@ callIfHostname("hdp3.local", async () => {
 
 callIfHostname("hive.local", async () => {
     // TODO 仍旧待修改——应使用数据库连接，把原来留着的数据库扬了
-    while (bindCmd(`nc -z 172.19.2.5 3306`).status !== 0) {
-        console.log("===等待数据库上线===")
-        await sleep(3000)
-    }
+    console.log("===等待数据库上线……===")
+    await waitUntil(() => portValid("db.local:3306"))
 
     // 被逼无奈！之后或许可以试着用nodejs连接数据库，然后轮询
-    // 不能使用setTimeout或setInterval，其在当前环境下无效，必须使用linux的sleep命令来进行同步的等待
-    console.log("===检测到数据库上线===")
-    await sleep(3000)
+    console.log("===检测到数据库上线，清空数据库===")
+    bindCmd("beeline -u jdbc:mysql://db.local:3306 -n root -p 123456 -e 'drop database if exists metastore'")
     console.log("===Hive: 格式化数据库Schema===")
     // schematool这个命令如果是derby的话会在当前目录（/share）创建derby的原文件，所以这里设置到一个另外的位置
     // execCmd(`
     //     mkdir -p ${process.env["HIVE_HOME"]}/data/derby &&\\
     //     cd ${process.env["HIVE_HOME"]}/data/derby &&\\
     //     schematool -dbType derby -initSchema`)
-
     // 使用MySQL，让它多嘴一些以方便debug
+    
     bindCmd(`schematool -initSchema -dbType mysql -verbose`)
 })

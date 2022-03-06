@@ -1,4 +1,4 @@
-const { bindCmd, execCmd, execCmdAsync, sleep } = require("./yuuki-util")
+const { bindCmd, execCmd, execCmdAsync, sleep, waitUntil, portValid } = require("./yuuki-util")
 const { resolve } = require("path")
 const { callIfHostname } = require("./asyncCall")
 
@@ -36,12 +36,13 @@ callIfHostname("hive.local", async () => {
     // 启动metastore服务，允许外界访问Hive的元数据
     // 这是一个前台进程，需要让它异步化
     console.log("===启动metastore服务===")
-    execCmdAsync("  hive --service metastore")
-    await sleep(5000)
-    // 绑定到hiveserver2服务
-    console.log("===启动hiveserver2服务===")
-    bindCmd(" hive --service hiveserver2")
+    execCmdAsync("hive --service metastore")
+
+    await waitUntil(() => portValid("hive.local:9083"))
     
+    // 绑定到hiveserver2服务
+    console.log("===metastore服务启动，启动hiveserver2服务===")
+    bindCmd(" hive --service hiveserver2")
     //bindCmd("/bin/bash")
 })
 

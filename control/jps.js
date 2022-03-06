@@ -10,6 +10,6 @@ const lst = [
 
 lst.forEach(str => {
     console.log(str)
-    bindCmd(`docker exec ${str} jps`)   
+    bindCmd(`docker exec ${str} jps -m`)   
     console.log("--------")
 })
