@@ -67,4 +67,14 @@ services:
         ipv4_address: 172.19.2.5
     environment:
       MYSQL_ROOT_PASSWORD : 123456
-     
+  spark.local:
+    stdin_open: true 
+    tty: true 
+    build: .
+    hostname: spark.local
+    container_name: spark.local
+    volumes:
+      - ./share/:/share
+    networks:
+      yuuki.net:
+        ipv4_address: 172.19.2.6

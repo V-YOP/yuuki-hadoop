@@ -1,4 +1,2 @@
 UsePAM yes
-
-
-Subsystem sftp /usr/libexec/sftp-server
+PermitRootLogin yes

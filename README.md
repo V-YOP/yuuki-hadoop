@@ -19,6 +19,7 @@
 - [jdk8](https://mirrors.tuna.tsinghua.edu.cn/AdoptOpenJDK/8/jdk/x64/linux/OpenJDK8U-jdk_x64_linux_hotspot_8u322b06.tar.gz)
 - [node](https://mirrors.tuna.tsinghua.edu.cn/nodejs-release/v17.5.0/node-v17.5.0-linux-x64.tar.gz)
 - [Hive-3.1.2](https://mirrors.tuna.tsinghua.edu.cn/apache/hive/hive-3.1.2/apache-hive-3.1.2-bin.tar.gz)
+- [Spark-3.2.1](https://mirrors.tuna.tsinghua.edu.cn/apache/spark/spark-3.2.1/spark-3.2.1-bin-hadoop3.2-scala2.13.tgz)
 
 然后执行`docker-compose up -d --build`即可，详细说明……之后会补上吧大概。
 

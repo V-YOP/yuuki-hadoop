@@ -46,6 +46,15 @@ callIfHostname("hive.local", async () => {
     //bindCmd("/bin/bash")
 })
 
+callIfHostname("spark.local", async () => {
+    bindCmd("$SPARK_HOME/sbin/start-all.sh")
+    bindCmd("/bin/bash")
+})
+
+
+
+
+
 
 
 

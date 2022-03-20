@@ -5,7 +5,8 @@ const lst = [
     'hdp1.local',
     'hdp2.local',
     'hdp3.local',
-    'hive.local'
+    'hive.local',
+    'spark.local'
 ]
 
 lst.forEach(str => {
