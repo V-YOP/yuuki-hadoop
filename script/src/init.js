@@ -10,9 +10,10 @@ const path = require('path')
 console.log("===初始化SSH服务端密钥===")
 bindCmd(`ssh-keygen -A`)
 
-// 为了ssh时能像使用docker exec时一样能拿到环境变量，直接把当前的环境变量“持久化”
+// 为了ssh时能像使用docker exec时一样能拿到环境变量，直接把当前的环境变量“持久化”，同时排除掉HOME=/root这一行
 console.log("===dump当前环境变量到/etc/profile.d/custom.sh中===")
-execCmd("env | sed 's/^/export &/g' >> /etc/profile.d/custom.sh")
+const envs = execCmd("env").toString().split("\n").filter(str=>str.indexOf("HOME=/root") === -1).map(str => "export " + str).join("\n")
+fs.writeFileSync("/etc/profile.d/custom.sh", envs)
 
 console.log("===构造Hadoop配置文件===")
 const PROPERTIES_PATH = '/config/properties'
@@ -22,7 +23,7 @@ fs.readdirSync(PROPERTIES_PATH)
     .forEach(([data, metadata]) => {
         if (!metadata['metadata.transform.to'])
             throw new Error('需给定metadata.transform.to！')
-        
+
         const resultPath = parseTemplate(metadata['metadata.transform.to'], process.env)
         const result = buildHadoopXml(data)
         console.log(`构造配置文件：${resultPath}\n${result}`)
@@ -58,6 +59,6 @@ callIfHostname("hive.local", async () => {
     //     cd ${process.env["HIVE_HOME"]}/data/derby &&\\
     //     schematool -dbType derby -initSchema`)
     // 使用MySQL，让它多嘴一些以方便debug
-    
+
     bindCmd(`schematool -initSchema -dbType mysql -verbose`)
 })

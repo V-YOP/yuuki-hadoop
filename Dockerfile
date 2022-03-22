@@ -13,7 +13,7 @@ RUN mv /opt/hadoop-3.3.1/                          /opt/hadoop/   &&\
     mv /opt/node-v17.5.0-linux-x64/                /opt/node/     &&\
     mv /opt/jdk8u322-b06/                          /opt/jdk8/     &&\
     mv /opt/apache-hive-3.1.2-bin/                 /opt/hive/     &&\
-    mv /opt/mysql-connector-java-8.0.26.jar        /opt/hive/lib  &&\
+    mv /opt/mysql-connector-java-8.0.23.jar        /opt/hive/lib  &&\
     mv /opt/spark-3.2.1-bin-hadoop3.2-scala2.13/   /opt/spark/
 
 ENV PATH="/opt/spark/bin:/opt/hive/bin:/opt/hadoop/bin:/opt/hadoop/sbin:/opt/node/bin:/opt/jdk8/bin:${PATH}" \
@@ -22,13 +22,12 @@ ENV PATH="/opt/spark/bin:/opt/hive/bin:/opt/hadoop/bin:/opt/hadoop/sbin:/opt/nod
     JAVA_HOME="/opt/jdk8" \
     HADOOP_HOME="/opt/hadoop" \
     HADOOP_MAPRED_HOME="/opt/hadoop" \
-    HDFS_NAMENODE_USER="root" \
-    HDFS_DATANODE_USER="root" \
-    HDFS_SECONDARYNAMENODE_USER="root" \
-    YARN_RESOURCEMANAGER_USER="root" \
-    YARN_NODEMANAGER_USER="root" \
-    HADOOP_USER_NAME="root" \
-    SPARK_USER_NAME="root"
+    HDFS_NAMENODE_USER="yuuki" \
+    HDFS_DATANODE_USER="yuuki" \
+    HDFS_SECONDARYNAMENODE_USER="yuuki" \
+    YARN_RESOURCEMANAGER_USER="yuuki" \
+    YARN_NODEMANAGER_USER="yuuki" \
+    HADOOP_USER_NAME="yuuki"
 
 # 拷贝package.json，用来安装依赖
 COPY ./script/package.json /init-script/
@@ -68,11 +67,11 @@ RUN touch /etc/profile.d/custom.sh &&\
     chmod 644 /home/yuuki/.ssh/id_rsa.pub &&\
     chmod 600 /home/yuuki/.ssh/id_rsa /home/yuuki/.ssh/authorized_keys &&\
     # root的被spark所使用
-    chmod 700 /root/.ssh/ &&\ 
+    chmod 700 /root/.ssh/ &&\
     chmod 644 /root/.ssh/id_rsa.pub &&\
     chmod 600 /root/.ssh/id_rsa /root/.ssh/authorized_keys
 
 # TODO 关于权限和用户的部分急需重写
 
-CMD  node /init-script/src/index.js
+CMD node /init-script/src/index.js
 # 使用 docker-compose up -d --build 来build和启动
